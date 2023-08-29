@@ -1,16 +1,10 @@
-import 'dart:ffi';
-
 import 'package:academyteacher/Basic%20Page/aboutUs.dart';
 import 'package:academyteacher/Basic%20Page/helpAndSuppportpage.dart';
 import 'package:academyteacher/Chat/chatScreen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
-import 'package:academyteacher/Slide%20Show/viewSlideShow.dart';
-import 'package:academyteacher/course/addinglecture.dart';
 import 'package:academyteacher/course/createCourse.dart';
-import 'package:academyteacher/course/updateCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
 import 'package:academyteacher/loginPage.dart';
-import 'package:academyteacher/setting/editProfile.dart';
 import 'package:academyteacher/setting/settingPage.dart';
 import 'package:academyteacher/student/registerStudent.dart';
 import 'package:academyteacher/teacher/teacherInfo.dart';
@@ -90,51 +84,53 @@ class MyHomePage extends StatelessWidget {
               final teacherData = snapshot.data?.data() as Map<String, dynamic>;
               final teacherName = teacherData['name'] as String;
 
-              return Column(
-                children: [
-                  Padding(padding: EdgeInsets.only(top: 60)),
-                  Text('Welcome', style: TextStyle(fontSize: 20),),
-                  Text('$teacherName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
-                  const SizedBox(height: 30),
-                  DrawerButton(
-                    title: "Setting",
-                    onPress: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SettingPage()));
-                    },
-                    icon: Icons.settings,
-                  ),
-                  const SizedBox(height: 10),
-                  DrawerButton(
-                    title: "Help & Support",
-                    onPress: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => HelpAndSupportPage()));
-                    },
-                    icon: Icons.support_agent,
-                  ),
-                  const SizedBox(height: 10),
-                  DrawerButton(
-                    title: "About us",
-                    onPress: () {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(padding: EdgeInsets.only(top: 60)),
+                    Text('Welcome', style: TextStyle(fontSize: 20),),
+                    Text('$teacherName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
+                    const SizedBox(height: 30),
+                    DrawerButton(
+                      title: "Setting",
+                      onPress: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SettingPage()));
+                      },
+                      icon: Icons.settings,
+                    ),
+                    const SizedBox(height: 10),
+                    DrawerButton(
+                      title: "Help & Support",
+                      onPress: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => HelpAndSupportPage()));
+                      },
+                      icon: Icons.support_agent,
+                    ),
+                    const SizedBox(height: 10),
+                    DrawerButton(
+                      title: "About us",
+                      onPress: () {
 
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => AboutUsPage()));
-                    },
-                    icon: Icons.info,
-                  ),
-                  DrawerButton(
-                    title: "Log out",
-                    onPress: () {
-                      _logout(context);
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                    },
-                    icon: Icons.logout,
-                  ),
-                ],
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => AboutUsPage()));
+                      },
+                      icon: Icons.info,
+                    ),
+                    DrawerButton(
+                      title: "Log out",
+                      onPress: () {
+                        _logout(context);
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => LoginPage()));
+                      },
+                      icon: Icons.logout,
+                    ),
+                  ],
+                ),
               );
             }
           },

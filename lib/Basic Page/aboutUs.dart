@@ -13,6 +13,12 @@ class AboutUsPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: BackButton(
+            onPressed:(){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid))); // This pops the current page
+
+            } ,
+          ),
           title: const Text('About Us'),
         ),
         body: Padding(
