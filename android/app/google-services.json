@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "916658043549",
+    "firebase_url": "https://academy-643bb-default-rtdb.firebaseio.com",
+    "project_id": "academy-643bb",
+    "storage_bucket": "academy-643bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916658043549:android:72c1d3135120089fe07274",
+        "android_client_info": {
+          "package_name": "com.example.academy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916658043549-2v5j8sqpdg8hcbqo9745632i9vrn158r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.academy",
+            "certificate_hash": "4851f7f788b3c2d865b04ecb04840267aeaadce6"
+          }
+        },
+        {
+          "client_id": "916658043549-73lc4rh95i2as7kis4bq24qk4pabbaja.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQazJUsmR6mktvnPg8KM7ip2JusCB90x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916658043549-59s62urghape0v093kpcna29p9s4kn7v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "916658043549-2dr51q9q0dblb9f23j5bbfv7dv8ckd46.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.teacheracademy.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916658043549:android:1da9af7c565050dde07274",
+        "android_client_info": {
+          "package_name": "com.example.academyteacher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916658043549-b9oq89r65jgl33jnvvu0ke93ec9oct3r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.academyteacher",
+            "certificate_hash": "4851f7f788b3c2d865b04ecb04840267aeaadce6"
+          }
+        },
+        {
+          "client_id": "916658043549-73lc4rh95i2as7kis4bq24qk4pabbaja.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQazJUsmR6mktvnPg8KM7ip2JusCB90x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916658043549-59s62urghape0v093kpcna29p9s4kn7v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "916658043549-2dr51q9q0dblb9f23j5bbfv7dv8ckd46.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.teacheracademy.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
