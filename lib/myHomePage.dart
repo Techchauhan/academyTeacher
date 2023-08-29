@@ -38,28 +38,6 @@ class MyHomePage extends StatelessWidget {
     return null;
   }
 
-  //For fetching the Teacher Data
-  Widget _buildTeacherName(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      return FutureBuilder<String?>(
-        future: getTeacherName(user.uid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError || snapshot.data == null) {
-            return Text('Error fetching teacher name');
-          } else {
-            return Text('Welcome, ${snapshot.data}!');
-          }
-        },
-      );
-    } else {
-      return Text('User not logged in');
-    }
-  }
-
 
   //For LogOut
   Future<void> _logout(BuildContext context) async {
