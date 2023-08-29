@@ -166,7 +166,7 @@ class _CreateLiveCourseState extends State<CreateLiveCourse> {
                   controller: _courseDurationController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Course Duration (years)',
+                    labelText:  'Course Duration (years)',
                     prefixIcon: Icon(Icons.timer),
                   ),
                 ),
