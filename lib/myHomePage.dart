@@ -4,6 +4,7 @@ import 'package:academyteacher/Chat/chatScreen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
+import 'package:academyteacher/live%20course/createLiveCourse.dart';
 import 'package:academyteacher/loginPage.dart';
 import 'package:academyteacher/setting/settingPage.dart';
 import 'package:academyteacher/student/registerStudent.dart';
@@ -243,9 +244,12 @@ class MyHomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SmallCard(title: 'Test Series', icon: Icons.access_alarm, onPress: () {
-                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>EditProfilePage(userId: FirebaseAuth.instance.currentUser!.uid.toString(),)));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
                       }, iconColor: Colors.deepPurpleAccent,),
-                      SmallCard(title: 'Sailed course', icon: Icons.shop, onPress: () {  }, iconColor: Colors.blue,),
+                      SmallCard(title: 'Sailed course', icon: Icons.shop, onPress: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+
+                      }, iconColor: Colors.blue,),
 
                     ],
                   ),

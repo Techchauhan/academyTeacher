@@ -49,6 +49,10 @@ dependencies:
   google_sign_in: ^6.1.4
   provider: ^6.0.5
 
+
+  #Adding for date format
+  intl: ^0.18.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
