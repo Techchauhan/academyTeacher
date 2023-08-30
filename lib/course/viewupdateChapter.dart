@@ -9,8 +9,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class ViewChaptersPage extends StatefulWidget {
   final String courseId;
-
-  ViewChaptersPage({required this.courseId});
+  ViewChaptersPage({super.key, required this.courseId});
 
   @override
   State<ViewChaptersPage> createState() => _ViewChaptersPageState();
@@ -18,19 +17,23 @@ class ViewChaptersPage extends StatefulWidget {
 
 class _ViewChaptersPageState extends State<ViewChaptersPage> {
 
-  DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
+  final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
+
+  String oldLectureTitle = '';
+  String oldVideoUrl = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MyHomePage(user: FirebaseAuth.instance.currentUser!.uid))); // Navigate back when back button is pressed
           },
         ),
        
-        title: Text('Chapters'),
+        title: const Text('Chapters'),
       ),
       body: StreamBuilder(
         stream: _databaseReference
@@ -49,24 +52,24 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                   final chapterInfo = entry.value as Map<dynamic, dynamic>;
 
                   return ExpansionTile(
-                    title: Text(chapterInfo['title']), // Handle if lectures are null
+                    title: Text(chapterInfo['title'], style: TextStyle(fontWeight: FontWeight.w800),), // Handle if lectures are null
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                           onPressed: () {
                             _addLecture(chapterId); // Call add lecture function
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             _editChapter(chapterId); // Call edit function
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             _deleteChapter(
                                 chapterId); // Call delete chapter function
@@ -78,9 +81,12 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                         ? (chapterInfo['lectures'] as Map<dynamic, dynamic>)
                         .entries
                         .map((lectureEntry) {
+
                       final lectureId = lectureEntry.key;
                       final lectureInfo =
                       lectureEntry.value as Map<dynamic, dynamic>;
+                      String oldLectureTitle = lectureInfo['title'];
+                      String oldVideoUrl = lectureInfo['videoUrl'];
 
                       return ListTile(
                         title: Text(lectureInfo['title']),
@@ -89,14 +95,14 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                               onPressed: () {
                                 _editLecture(
                                     chapterId, lectureId); // Call edit function
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () {
                                 _deleteLecture(
                                     chapterId, lectureId); // Call delete function
@@ -125,7 +131,7 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
       floatingActionButton: SpeedDial(
 
         animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22.0),
+        animatedIconTheme: const IconThemeData(size: 22.0),
         curve: Curves.easeInOut,
 
         children: [
@@ -180,7 +186,7 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
         builder: (context) => EditLecturePage(
           courseId: widget.courseId,
           chapterId: chapterId,
-          lectureId: lectureId,
+          lectureId: lectureId, oldVideoUrl: oldVideoUrl, oldLectureTitle: oldLectureTitle,
         ),
       ),
     );
@@ -193,21 +199,21 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Delete Chapter'),
-          content: Text('Are you sure you want to delete this chapter?'),
+          title: const Text('Delete Chapter'),
+          content: const Text('Are you sure you want to delete this chapter?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 _performDeleteChapter(chapterId); // Proceed with the deletion
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -234,21 +240,21 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Delete Lecture'),
-          content: Text('Are you sure you want to delete this lecture?'),
+          title: const Text('Delete Lecture'),
+          content: const Text('Are you sure you want to delete this lecture?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 _performDeleteLecture(chapterId, lectureId); // Proceed with the deletion
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
