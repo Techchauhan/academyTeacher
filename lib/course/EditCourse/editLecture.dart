@@ -1,3 +1,5 @@
+import 'package:academyteacher/widgits/animatedButton2.dart';
+import 'package:academyteacher/widgits/customProgressIndicator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,6 +29,8 @@ class _EditLecturePageState extends State<EditLecturePage> {
 
   double _uploadProgress = 0.0;
   late TextEditingController lectureTitleController;
+  late TextEditingController videoUrlController;
+
 
   String lectureTitle = '';
   String videoUrl = '';
@@ -36,7 +40,7 @@ class _EditLecturePageState extends State<EditLecturePage> {
     super.initState();
     _fetchLectureTitle(); // Fetch the lecture title when the page loads
     lectureTitleController = TextEditingController(text: widget.oldLectureTitle);
-    videoUrl = widget.oldVideoUrl;
+    videoUrlController = TextEditingController(text: widget.oldVideoUrl);
   }
 
   void _fetchLectureTitle() async {
@@ -56,6 +60,8 @@ class _EditLecturePageState extends State<EditLecturePage> {
       setState(() {
         lectureTitle = (snapshot.snapshot.value as Map<dynamic, dynamic>)['title'] ?? '';
         lectureTitleController.text = lectureTitle;
+        lectureTitle = (snapshot.snapshot.value as Map<dynamic, dynamic>)['videoUrl'] ?? ''; // Assign to videoUrl variable
+        videoUrlController.text = videoUrl; // Update the video URL in the controller
       });
     }
   }
@@ -84,33 +90,38 @@ class _EditLecturePageState extends State<EditLecturePage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: const InputDecoration(labelText: 'YouTube Link'),
-              controller: TextEditingController(text: videoUrl),
+              controller:  videoUrlController,
               readOnly: true,
             ),
           ),
-          LinearProgressIndicator(
-            value: _uploadProgress,
-            semanticsLabel: 'Upload Progress',
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _pickAndUploadVideo();
-            },
-            child: const Text('Upload Video'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _updateLecture();
-            },
-            child: const Text('Save Changes'),
-          ),
+          _uploadProgress > 0 ? CustomProgressIndicator(_uploadProgress) : const SizedBox(),
+
+          AnimateButton2(onPress: (){
+            _pickAndUploadVideo();
+          }, ),
+
+          Padding( padding: const EdgeInsets.all(16.0), // Adjust the padding as needed
+            child: SizedBox(
+              width:   MediaQuery.of(context).size.width - 32.0,
+            ),),
+
+          // ElevatedButton(
+          //   onPressed: () {
+          //     _updateLecture();
+          //   },
+          //   child: const Text('Save Changes'),
+          // ), //old Button
         ],
       ),
+      floatingActionButton: MyStickyButton(onPress: (){
+        _updateLecture();
+      },  ),
     );
   }
 
   void _updateLecture() async {
     String newLectureTitle = lectureTitleController.text;
+
 
     FirebaseDatabase.instance
         .reference()
@@ -132,6 +143,14 @@ class _EditLecturePageState extends State<EditLecturePage> {
     final XFile? pickedVideo =
     await ImagePicker().pickVideo(source: ImageSource.gallery);
 
+
+    //Code for Deleting the Old Video if the user selected the new video.
+    if (videoUrl != widget.oldVideoUrl) {
+      firebase_storage.Reference oldVideoRef =
+      firebase_storage.FirebaseStorage.instance.refFromURL(videoUrlController.text);
+      await oldVideoRef.delete();
+    }
+
     if (pickedVideo != null) {
       String videoPath =
           'videos/${widget.courseId}/${widget.chapterId}/${widget.lectureId}/${pickedVideo.name}';
@@ -151,6 +170,7 @@ class _EditLecturePageState extends State<EditLecturePage> {
         String downloadUrl = await storageRef.getDownloadURL();
         setState(() {
           videoUrl = downloadUrl;
+          videoUrlController.text = videoUrl;
           _uploadProgress = 0.0; // Reset progress indicator
         });
 
@@ -161,3 +181,34 @@ class _EditLecturePageState extends State<EditLecturePage> {
     }
   }
 }
+
+
+class MyStickyButton extends StatelessWidget {
+  final VoidCallback? onPress;
+  final String? title;
+
+  const MyStickyButton({super.key, this.onPress, this.title});
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    double buttonWidth = MediaQuery.of(context).size.width - 32.0; // Adjust the padding as needed
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 10), // Adjust the padding as needed
+      child: SizedBox(
+        width: buttonWidth,
+        height: 60,
+        child: ElevatedButton(
+          onPressed: onPress,
+          child: const Text('Save Changes'),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
