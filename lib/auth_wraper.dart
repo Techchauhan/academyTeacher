@@ -18,7 +18,7 @@ class AuthWrapper extends StatelessWidget {
             return MyHomePage(user: user.uid);
           }
         }
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
     );
   }
