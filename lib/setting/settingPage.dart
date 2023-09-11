@@ -1,5 +1,5 @@
 import 'package:academyteacher/main.dart';
-import 'package:academyteacher/myHomePage.dart';
+import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:academyteacher/setting/editProfile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

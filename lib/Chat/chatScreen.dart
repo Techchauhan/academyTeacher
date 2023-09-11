@@ -1,7 +1,7 @@
 import 'package:academyteacher/Chat/StudentChatScreen.dart';
 import 'package:academyteacher/Chat/groupChatScreen.dart';
 import 'package:academyteacher/Chat/teacherChatScreen.dart';
-import 'package:academyteacher/myHomePage.dart';
+import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

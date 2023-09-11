@@ -1,7 +1,7 @@
 import 'package:academyteacher/course/EditCourse/editChapter.dart';
 import 'package:academyteacher/course/EditCourse/editLecture.dart';
 import 'package:academyteacher/course/lectureDetails.dart';
-import 'package:academyteacher/myHomePage.dart';
+import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';

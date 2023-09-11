@@ -1,11 +1,12 @@
 import 'package:academyteacher/Basic%20Page/aboutUs.dart';
 import 'package:academyteacher/Basic%20Page/helpAndSuppportpage.dart';
+import 'package:academyteacher/Books/uploadPdf.dart';
 import 'package:academyteacher/Chat/chatScreen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
 import 'package:academyteacher/live%20course/createLiveCourse.dart';
-import 'package:academyteacher/loginPage.dart';
+import 'package:academyteacher/Authentication/loginPage.dart';
 import 'package:academyteacher/setting/settingPage.dart';
 import 'package:academyteacher/student/registerStudent.dart';
 import 'package:academyteacher/teacher/teacherInfo.dart';
@@ -225,7 +226,9 @@ class MyHomePage extends StatelessWidget {
                         SmallCard(title: 'Teachers', icon: Icons.card_membership, onPress: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>TeachersListScreen()));
                         }, iconColor: Colors.black87,),
-                        SmallCard(title: 'Push Notification', icon: Icons.notification_add_outlined, onPress: () {  }, iconColor: Colors.redAccent,),
+                        SmallCard(title: 'Upload Book', icon: Icons.menu_book, onPress: () {
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>UploadPdfPage()));
+                        }, iconColor: Colors.orange,),
 
                       ],
                     ),
@@ -248,6 +251,19 @@ class MyHomePage extends StatelessWidget {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
                         }, iconColor: Colors.deepPurpleAccent,),
                         SmallCard(title: 'Sailed course', icon: Icons.shop, onPress: () {
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+
+                        }, iconColor: Colors.blue,),
+
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SmallCard(title: 'Announcement', icon: Icons.speaker, onPress: () {
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                        }, iconColor: Colors.deepPurpleAccent,),
+                        SmallCard(title: 'Add Reel', icon: Icons.ondemand_video, onPress: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
 
                         }, iconColor: Colors.blue,),

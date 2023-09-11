@@ -1,5 +1,5 @@
 import 'package:academyteacher/Chat/teacherMessagingScreen.dart';
-import 'package:academyteacher/myHomePage.dart';
+import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

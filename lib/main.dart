@@ -1,4 +1,4 @@
-import 'package:academyteacher/auth_wraper.dart';
+import 'package:academyteacher/Authentication/auth_wraper.dart';
 import 'package:academyteacher/provider/userIdProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

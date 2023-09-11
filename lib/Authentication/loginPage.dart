@@ -1,5 +1,5 @@
-import 'package:academyteacher/myHomePage.dart';
-import 'package:academyteacher/singupPage.dart';
+import 'package:academyteacher/Authentication/myHomePage.dart';
+import 'package:academyteacher/Authentication/singupPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
