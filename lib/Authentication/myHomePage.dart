@@ -2,6 +2,8 @@ import 'package:academyteacher/Basic%20Page/aboutUs.dart';
 import 'package:academyteacher/Basic%20Page/helpAndSuppportpage.dart';
 import 'package:academyteacher/Books/uploadPdf.dart';
 import 'package:academyteacher/Chat/chatScreen.dart';
+import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
+import 'package:academyteacher/LIve/screens/login_screen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
@@ -61,15 +63,15 @@ class MyHomePage extends StatelessWidget {
             } else if (snapshot.hasError) {
               return const Text('Error fetching data');
             } else {
-              final teacherData = snapshot.data?.data() as Map<String, dynamic>;
-              final teacherName = teacherData['name'] as String;
+              // final teacherData = snapshot.data?.data() as Map<String, dynamic>;
+              // final teacherName = teacherData['name'] ?? '';
 
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     Padding(padding: EdgeInsets.only(top: 60)),
                     Text('Welcome', style: TextStyle(fontSize: 20),),
-                    Text('$teacherName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
+                    // Text('$teacherName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
                     const SizedBox(height: 30),
                     DrawerButton(
                       title: "Setting",
@@ -281,7 +283,9 @@ class MyHomePage extends StatelessWidget {
 
                         Container(
                         child: Padding(padding: EdgeInsets.all(20),
-                          child: ElevatedButton(onPressed: (){},
+                          child: ElevatedButton(onPressed: (){
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                          },
                             style: ElevatedButton.styleFrom(
                               primary: Colors.red, // Set the background color
                               padding: EdgeInsets.all(16.0), // Adjust the padding for size

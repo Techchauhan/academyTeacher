@@ -279,7 +279,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_lints:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_lints
       sha256: "2118df84ef0c3ca93f96123a616ae8540879991b8b57af2f81b76a7ada49b2a4"
@@ -472,6 +472,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.18.1"
+  jitsi_meet_flutter_sdk:
+    dependency: "direct main"
+    description:
+      name: jitsi_meet_flutter_sdk
+      sha256: "7fabf9934e57b8cb3d70061b1c6f059c8ea798959bd6f56797a49b2b54095f38"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
+  jitsi_meet_wrapper:
+    dependency: "direct main"
+    description:
+      name: jitsi_meet_wrapper
+      sha256: cf678a95e6bf817765d974155c21303355e2c20e470f5516e09fffaef3458e8d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0+1"
+  jitsi_meet_wrapper_platform_interface:
+    dependency: transitive
+    description:
+      name: jitsi_meet_wrapper_platform_interface
+      sha256: "7939f7c5ae8365a7fb82618de7d68f28e85d5e6f995e885f1c732cda1b83b988"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   js:
     dependency: transitive
     description:

@@ -1,11 +1,15 @@
 import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:academyteacher/Authentication/singupPage.dart';
+import 'package:academyteacher/LIve/resources/auth_methods.dart';
+import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
+import 'package:academyteacher/LIve/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart'; // Import Firestore
 
 class LoginPage extends StatelessWidget {
+  final AuthMethods _authMethods = AuthMethods();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -26,6 +30,7 @@ class LoginPage extends StatelessWidget {
           email: email,
           password: password,
         );
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)), // Replace HomePage with your actual home page widget
@@ -87,6 +92,16 @@ class LoginPage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => SignUpPage()));
                   },
                   child: Text("Don't have an account? Sign up"),
+                ),
+                SizedBox(height: 20,),
+                CustomButton(
+                  text: 'Google Sign In',
+                  onPressed: () async {
+                    bool res = await _authMethods.signInWithGoogle(context);
+                    if (res) {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LiveHomeScreen()));
+                    }
+                  },
                 ),
               ],
             ),

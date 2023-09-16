@@ -1,4 +1,7 @@
 import 'package:academyteacher/Authentication/auth_wraper.dart';
+import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
+import 'package:academyteacher/LIve/screens/login_screen.dart';
+import 'package:academyteacher/LIve/screens/video_call_screen.dart';
 import 'package:academyteacher/provider/userIdProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,6 +46,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/homelive': (context) => const LiveHomeScreen(),
+        '/video-call': (context) => const VideoCallScreen(),
+      },
       home: AuthWrapper(),
     );
   }
