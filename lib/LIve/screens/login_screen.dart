@@ -30,15 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          CustomButton(
-            text: 'Google Sign In',
-            onPressed: () async {
-              bool res = await _authMethods.signInWithGoogle(context);
-              if (res) {
-               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LiveHomeScreen()));
-              }
-            },
-          ),
+
         ],
       ),
     );

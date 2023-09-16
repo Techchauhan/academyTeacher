@@ -2,7 +2,6 @@ import 'package:academyteacher/LIve/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,32 +10,35 @@ class AuthMethods {
   Stream<User?> get authChanges => _auth.authStateChanges();
   User get user => _auth.currentUser!;
 
-  Future<bool> signInWithGoogle(BuildContext context) async {
+  Future<bool> signInWithEmailPassword(
+      String email, String password, BuildContext context) async {
     bool res = false;
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('teachers')
+          .where('email', isEqualTo: email)
+          .get();
 
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      if (querySnapshot.docs.isNotEmpty) {
+        // User exists in Firestore, proceed with login
+        UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      User? user = userCredential.user;
-      if (user != null) {
-        if (userCredential.additionalUserInfo!.isNewUser) {
-          await _firestore.collection('users').doc('user.uid').set({
-            'username': user.displayName,
-            'uid': user.uid,
-            'profilePhoto': user.photoURL,
-          });
+        User? user = userCredential.user;
+        if (user != null) {
+          res = true;
+        } else {
+          // Handle the case where userCredential.user is null
+          res = false;
         }
-        res = true;
+      } else {
+        // User does not exist in the Firestore "teachers" collection
+        // You might want to show an error message or take appropriate action
+        showSnackBar(context, 'User not found by LIVE');
+        res = false;
       }
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!);

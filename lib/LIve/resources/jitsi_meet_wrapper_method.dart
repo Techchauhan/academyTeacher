@@ -1,5 +1,6 @@
 import 'package:academyteacher/LIve/resources/firestore_methord.dart';
 import 'package:academyteacher/LIve/utils/feature_flag.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 import 'package:jitsi_meet_wrapper/jitsi_meet_wrapper.dart';
@@ -12,7 +13,7 @@ class JitsiMeetMethod {
 
   final serverText = TextEditingController();
   final roomText = TextEditingController(text: "jitsi-meet-wrapper-test-room");
-  final subjectText = TextEditingController(text: "Teach");
+  final subjectText = TextEditingController(text: "Academy");
   final tokenText = TextEditingController();
 
   bool isAudioMuted = true;
@@ -34,11 +35,9 @@ class JitsiMeetMethod {
         // FeatureFlag.resolution,
       } ;
 
-
-
       String name;
       if (username.isEmpty) {
-        name = _authMethods.user.displayName!;
+        name = _authMethods.user.email!;
       } else {
         name = username;
       }
@@ -53,8 +52,8 @@ class JitsiMeetMethod {
         isAudioMuted: isAudioMuted,
         isAudioOnly: isAudioOnly,
         isVideoMuted: isVideoMuted,
-        userDisplayName: name,
-        userEmail: _authMethods.user.email,
+        userDisplayName: _authMethods.user.displayName,
+        userEmail: FirebaseAuth.instance.currentUser!.email,
         // featureFlags:  featureFlags,
       );
 

@@ -1,12 +1,10 @@
 import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:academyteacher/Authentication/singupPage.dart';
 import 'package:academyteacher/LIve/resources/auth_methods.dart';
-import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
-import 'package:academyteacher/LIve/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lottie/lottie.dart'; // Import Firestore
+import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatelessWidget {
   final AuthMethods _authMethods = AuthMethods();
@@ -26,26 +24,29 @@ class LoginPage extends StatelessWidget {
 
       if (querySnapshot.docs.isNotEmpty) {
         // User exists in Firestore, proceed with login
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
+        bool signInSuccess = await _authMethods.signInWithEmailPassword(
+          email,
+          password,
+          context,
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)), // Replace HomePage with your actual home page widget
-        );
-        
+        if (signInSuccess) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyHomePage(
+                user: FirebaseAuth.instance.currentUser!.uid,
+              ),
+            ),
+          );
+        }
       } else {
         // User doesn't exist in Firestore
         print("User not found in 'teachers' collection");
       }
-    }
-
-
-    catch (e) {
+    } catch (e) {
       print("Error: $e");
-      // Handle login error
+      // Handle login error, you can show a snackbar or error message here.
     }
   }
 
@@ -65,7 +66,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 Center(
                   child: Text(
-                    "Verify You as a Teacher",
+                    "Verify Yourself as a Teacher",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -73,13 +74,20 @@ class LoginPage extends StatelessWidget {
                   height: 20,
                 ),
                 TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                        labelText: "Email", prefixIcon: Icon(Icons.email))),
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                ),
                 TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                        labelText: "Password", prefixIcon: Icon(Icons.key))),
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    prefixIcon: Icon(Icons.key),
+                  ),
+                  obscureText: true, // Hide the password text
+                ),
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => _login(context),
@@ -88,21 +96,16 @@ class LoginPage extends StatelessWidget {
                 SizedBox(height: 8),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SignUpPage()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignUpPage(),
+                      ),
+                    );
                   },
                   child: Text("Don't have an account? Sign up"),
                 ),
-                SizedBox(height: 20,),
-                CustomButton(
-                  text: 'Google Sign In',
-                  onPressed: () async {
-                    bool res = await _authMethods.signInWithGoogle(context);
-                    if (res) {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LiveHomeScreen()));
-                    }
-                  },
-                ),
+                SizedBox(height: 20),
               ],
             ),
           ),

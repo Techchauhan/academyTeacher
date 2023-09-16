@@ -3,7 +3,6 @@ import 'package:academyteacher/Basic%20Page/helpAndSuppportpage.dart';
 import 'package:academyteacher/Books/uploadPdf.dart';
 import 'package:academyteacher/Chat/chatScreen.dart';
 import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
-import 'package:academyteacher/LIve/screens/login_screen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
@@ -63,8 +62,8 @@ class MyHomePage extends StatelessWidget {
             } else if (snapshot.hasError) {
               return const Text('Error fetching data');
             } else {
-              // final teacherData = snapshot.data?.data() as Map<String, dynamic>;
-              // final teacherName = teacherData['name'] ?? '';
+              final teacherData = snapshot.data?.data() as Map<String, dynamic>;
+              final teacherName = teacherData['name'] ?? '';
 
               return SingleChildScrollView(
                 child: Column(
@@ -284,7 +283,7 @@ class MyHomePage extends StatelessWidget {
                         Container(
                         child: Padding(padding: EdgeInsets.all(20),
                           child: ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LiveHomeScreen()));
                           },
                             style: ElevatedButton.styleFrom(
                               primary: Colors.red, // Set the background color

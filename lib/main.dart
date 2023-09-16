@@ -1,6 +1,5 @@
 import 'package:academyteacher/Authentication/auth_wraper.dart';
 import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
-import 'package:academyteacher/LIve/screens/login_screen.dart';
 import 'package:academyteacher/LIve/screens/video_call_screen.dart';
 import 'package:academyteacher/provider/userIdProvider.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +46,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        '/login': (context) => const LoginScreen(),
         '/homelive': (context) => const LiveHomeScreen(),
         '/video-call': (context) => const VideoCallScreen(),
       },

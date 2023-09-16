@@ -1,6 +1,6 @@
-import 'package:academyteacher/LIve/resources/auth_methods.dart';
 import 'package:academyteacher/LIve/resources/jitsi_meet_wrapper_method.dart';
 import 'package:academyteacher/LIve/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
@@ -14,8 +14,8 @@ class VideoCallScreen extends StatefulWidget {
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  final AuthMethods _authMethods = AuthMethods();
 
+  User? currentUser = FirebaseAuth.instance.currentUser;
   late TextEditingController meetingIdController;
   late TextEditingController nameController;
 
@@ -25,7 +25,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   @override
   void initState() {
     meetingIdController = TextEditingController();
-    nameController = TextEditingController(text: _authMethods.user.displayName);
+    nameController = TextEditingController(text: currentUser!.displayName);
     super.initState();
   }
 

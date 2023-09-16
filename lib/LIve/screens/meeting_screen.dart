@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:academyteacher/LIve/resources/auth_methods.dart';
 import 'package:academyteacher/LIve/resources/jitsi_meet_wrapper_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -13,8 +13,13 @@ class MeetingScreen extends StatefulWidget {
   State<MeetingScreen> createState() => _MeetingScreenState();
 }
 class _MeetingScreenState extends State<MeetingScreen> {
-  final AuthMethods _authMethods = AuthMethods();
+  String? uid;
+  String? name;
+  String? email;
+
+  User? currentUser = FirebaseAuth.instance.currentUser;
   final JitsiMeetMethod _jitsiMeetMethods = JitsiMeetMethod();
+
 
   createNewMeeting() async {
     var random = Random();
@@ -29,6 +34,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         Row(
@@ -57,6 +63,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
               icon: Icons.arrow_upward_rounded,
             ),
           ],
+        ),
+        Container(
+          child: Text(currentUser!.displayName.toString()),
         ),
         const Expanded(
             child: Center(
