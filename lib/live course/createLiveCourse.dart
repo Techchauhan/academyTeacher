@@ -116,152 +116,146 @@ class _CreateLiveCourseState extends State<CreateLiveCourse> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: ()async{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)));
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Create Live Course'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Live Course'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 150,
+                  color: Colors.grey[300],
+                  child: _thumbnailImage != null
+                      ? Image.file(
+                    _thumbnailImage,
                     height: 150,
-                    color: Colors.grey[300],
-                    child: _thumbnailImage != null
-                        ? Image.file(
-                      _thumbnailImage,
-                      height: 150,
-                    )
-                        : Container(
-                      child: const Center(
-                        child: Icon(Icons.image),
-                      ),
+                  )
+                      : Container(
+                    child: const Center(
+                      child: Icon(Icons.image),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _courseNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Course Name',
-                    prefixIcon: Icon(Icons.text_fields),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _courseNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Course Name',
+                  prefixIcon: Icon(Icons.text_fields),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _courseDurationController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText:  'Course Duration (years)',
-                    prefixIcon: Icon(Icons.timer),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _courseDurationController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText:  'Course Duration (years)',
+                  prefixIcon: Icon(Icons.timer),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  readOnly: true,
-                  controller: _courseStartDateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Start Date',
-                    prefixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        _courseStartDateController.text = DateFormat('yyyy-MM-dd').format(picked);
-                      });
-                    }
-                  },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                readOnly: true,
+                controller: _courseStartDateController,
+                decoration: const InputDecoration(
+                  labelText: 'Start Date',
+                  prefixIcon: Icon(Icons.calendar_today),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  readOnly: true,
-                  controller: _courseEndDateController,
-                  decoration: const InputDecoration(
-                    labelText: 'End Date',
-                    prefixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now().add(const Duration(days: 7)),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        _courseEndDateController.text = DateFormat('yyyy-MM-dd').format(picked);
-                      });
-                    }
-                  },
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _courseStartDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                readOnly: true,
+                controller: _courseEndDateController,
+                decoration: const InputDecoration(
+                  labelText: 'End Date',
+                  prefixIcon: Icon(Icons.calendar_today),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _coursePriceController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Price',
-                    prefixIcon: Icon(Icons.monetization_on),
-                  ),
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(const Duration(days: 7)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _courseEndDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _coursePriceController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Price',
+                  prefixIcon: Icon(Icons.monetization_on),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _discountController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Discount (%)',
-                    prefixIcon: Icon(Icons.local_offer),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _discountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Discount (%)',
+                  prefixIcon: Icon(Icons.local_offer),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _basicDetailsController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    labelText: 'Basic Details',
-                    prefixIcon: Icon(Icons.description),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _basicDetailsController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'Basic Details',
+                  prefixIcon: Icon(Icons.description),
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    final courseName = _courseNameController.text;
-                    final courseDuration = int.tryParse(_courseDurationController.text) ?? 0;
-                    final startDate = DateFormat('yyyy-MM-dd').parse(_courseStartDateController.text);
-                    final endDate = DateFormat('yyyy-MM-dd').parse(_courseEndDateController.text);
-                    final price = double.tryParse(_coursePriceController.text) ?? 0;
-                    final discount = double.tryParse(_discountController.text) ?? 0;
-                    final basicDetails = _basicDetailsController.text;
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  final courseName = _courseNameController.text;
+                  final courseDuration = int.tryParse(_courseDurationController.text) ?? 0;
+                  final startDate = DateFormat('yyyy-MM-dd').parse(_courseStartDateController.text);
+                  final endDate = DateFormat('yyyy-MM-dd').parse(_courseEndDateController.text);
+                  final price = double.tryParse(_coursePriceController.text) ?? 0;
+                  final discount = double.tryParse(_discountController.text) ?? 0;
+                  final basicDetails = _basicDetailsController.text;
 
-                    if (courseName.isNotEmpty &&
-                        courseDuration > 0 &&
-                        startDate != null &&
-                        endDate != null &&
-                        price > 0 &&
-                        discount >= 0 &&
-                        discount <= 100 &&
-                        basicDetails.isNotEmpty) {
-                      _createCourse(
-                          courseName, courseDuration, startDate, endDate, price, discount, basicDetails);
-                    }
-                  },
-                  child: const Text('Create Course'),
-                ),
-              ],
-            ),
+                  if (courseName.isNotEmpty &&
+                      courseDuration > 0 &&
+                      startDate != null &&
+                      endDate != null &&
+                      price > 0 &&
+                      discount >= 0 &&
+                      discount <= 100 &&
+                      basicDetails.isNotEmpty) {
+                    _createCourse(
+                        courseName, courseDuration, startDate, endDate, price, discount, basicDetails);
+                  }
+                },
+                child: const Text('Create Course'),
+              ),
+            ],
           ),
         ),
       ),

@@ -1,7 +1,9 @@
 import 'package:academyteacher/widgits/animatedButton2.dart';
 import 'package:academyteacher/widgits/customProgressIndicator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io';
@@ -41,29 +43,6 @@ class _EditLecturePageState extends State<EditLecturePage> {
     _fetchLectureTitle(); // Fetch the lecture title when the page loads
     lectureTitleController = TextEditingController(text: widget.oldLectureTitle);
     videoUrlController = TextEditingController(text: widget.oldVideoUrl);
-  }
-
-  void _fetchLectureTitle() async {
-    // Fetch the lecture title from Firebase and update the lectureTitle variable
-    DatabaseReference lectureRef = FirebaseDatabase.instance
-        .reference()
-        .child('courses')
-        .child(widget.courseId)
-        .child('chapters')
-        .child(widget.chapterId)
-        .child('lectures')
-        .child(widget.lectureId);
-
-    DatabaseEvent snapshot = await lectureRef.once();
-
-    if (snapshot.snapshot.value != null) {
-      setState(() {
-        lectureTitle = (snapshot.snapshot.value as Map<dynamic, dynamic>)['title'] ?? '';
-        lectureTitleController.text = lectureTitle;
-        lectureTitle = (snapshot.snapshot.value as Map<dynamic, dynamic>)['videoUrl'] ?? ''; // Assign to videoUrl variable
-        videoUrlController.text = videoUrl; // Update the video URL in the controller
-      });
-    }
   }
 
   @override
@@ -119,67 +98,108 @@ class _EditLecturePageState extends State<EditLecturePage> {
     );
   }
 
+  void _fetchLectureTitle() async {
+    try {
+      // Fetch the lecture title and video URL from Firestore and update the respective variables
+      DocumentReference lectureRef = FirebaseFirestore.instance
+          .collection('courses')
+          .doc(widget.courseId)
+          .collection('chapters')
+          .doc(widget.chapterId)
+          .collection('lectures')
+          .doc(widget.lectureId);
+
+      DocumentSnapshot snapshot = await lectureRef.get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic> lectureData = snapshot.data() as Map<String, dynamic>;
+
+        setState(() {
+          lectureTitle = lectureData['title'] ?? '';
+          lectureTitleController.text = lectureTitle;
+          videoUrl = lectureData['videoUrl'] ?? '';
+          videoUrlController.text = videoUrl;
+        });
+      }
+    } catch (e) {
+      print('Error fetching lecture data: $e');
+    }
+  }
+
   void _updateLecture() async {
     String newLectureTitle = lectureTitleController.text;
 
+    try {
+      final DocumentReference lectureRef = FirebaseFirestore.instance
+          .collection('courses')
+          .doc(widget.courseId)
+          .collection('chapters')
+          .doc(widget.chapterId)
+          .collection('lectures')
+          .doc(widget.lectureId);
 
-    FirebaseDatabase.instance
-        .reference()
-        .child('courses')
-        .child(widget.courseId)
-        .child('chapters')
-        .child(widget.chapterId)
-        .child('lectures')
-        .child(widget.lectureId)
-        .set({
-      'title': newLectureTitle,
-      'videoUrl': videoUrl,
-    });
+      await lectureRef.set({
+        'title': newLectureTitle,
+        'videoUrl': videoUrl,
+      });
 
-    Navigator.pop(context); // Return to the previous page
+      Navigator.pop(context); // Return to the previous page
+    } catch (e) {
+      // Handle errors, if any
+      Fluttertoast.showToast(msg: "Error: $e");
+    }
   }
 
   Future<void> _pickAndUploadVideo() async {
     final XFile? pickedVideo =
     await ImagePicker().pickVideo(source: ImageSource.gallery);
 
-
-    //Code for Deleting the Old Video if the user selected the new video.
-    if (videoUrl != widget.oldVideoUrl) {
-      firebase_storage.Reference oldVideoRef =
-      firebase_storage.FirebaseStorage.instance.refFromURL(videoUrlController.text);
-      await oldVideoRef.delete();
-    }
-
     if (pickedVideo != null) {
-      String videoPath =
-          'videos/${widget.courseId}/${widget.chapterId}/${widget.lectureId}/${pickedVideo.name}';
-      firebase_storage.Reference storageRef =
-      firebase_storage.FirebaseStorage.instance.ref().child(videoPath);
+      try {
+        // Code for Deleting the Old Video if the user selected the new video.
+        if (videoUrl != widget.oldVideoUrl) {
+          final firebase_storage.Reference oldVideoRef =
+          firebase_storage.FirebaseStorage.instance.refFromURL(widget.oldVideoUrl);
+          await oldVideoRef.delete();
+        }
 
-      firebase_storage.UploadTask uploadTask =
-      storageRef.putFile(File(pickedVideo.path));
+        final String videoPath =
+            'videos/${widget.courseId}/${widget.chapterId}/${widget.lectureId}/${pickedVideo.name}';
+        final firebase_storage.Reference storageRef =
+        firebase_storage.FirebaseStorage.instance.ref(videoPath);
 
-      uploadTask.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
-        setState(() {
-          _uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
+        final firebase_storage.UploadTask uploadTask =
+        storageRef.putFile(File(pickedVideo.path));
+
+        uploadTask.snapshotEvents.listen(
+              (firebase_storage.TaskSnapshot snapshot) {
+            setState(() {
+              _uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
+            });
+          },
+        );
+
+        await uploadTask.whenComplete(() async {
+          final String downloadUrl = await storageRef.getDownloadURL();
+          setState(() {
+            videoUrl = downloadUrl;
+            videoUrlController.text = videoUrl;
+            _uploadProgress = 0.0; // Reset progress indicator
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Video uploaded successfully.'),
+            ),
+          );
         });
-      });
-
-      await uploadTask.whenComplete(() async {
-        String downloadUrl = await storageRef.getDownloadURL();
-        setState(() {
-          videoUrl = downloadUrl;
-          videoUrlController.text = videoUrl;
-          _uploadProgress = 0.0; // Reset progress indicator
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Video uploaded successfully.'),
-        ));
-      });
+      } catch (e) {
+        // Handle errors, if any
+        Fluttertoast.showToast(msg: "Error: $e");
+      }
     }
   }
+
 }
 
 

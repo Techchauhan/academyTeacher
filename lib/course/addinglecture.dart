@@ -1,8 +1,10 @@
 import 'package:academyteacher/Course%20Content/lectureModel.dart';
 import 'package:academyteacher/Authentication/myHomePage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 class AddChapterPage extends StatefulWidget {
@@ -96,7 +98,7 @@ class _AddChapterPageState extends State<AddChapterPage> {
               // Save Button
               ElevatedButton(
                 onPressed: () {
-                  _saveChaptersToFirebase();
+                  _saveChaptersToFirestore();
                 },
                 child: Text('Save Chapters and Lectures'),
               ),
@@ -107,29 +109,46 @@ class _AddChapterPageState extends State<AddChapterPage> {
     );
   }
 
-  void _saveChaptersToFirebase() {
-    final DatabaseReference databaseReference =
-    FirebaseDatabase.instance.reference();
+  void _saveChaptersToFirestore() async {
+    try {
+      final CollectionReference courseCollection =
+      FirebaseFirestore.instance.collection('courses');
 
-    for (var chapter in chapters) {
-      var chapterRef = databaseReference
-          .child('courses')
-          .child(widget.courseId)
-          .child('chapters')
-          .push();
-      chapterRef.set({'title': chapter.title});
+      for (var chapter in chapters) {
+        DocumentReference courseDocRef = courseCollection.doc(widget.courseId);
 
-      for (var lecture in chapter.lectures) {
-        chapterRef.child('lectures').push().set(lecture.toMap());
+        // Create a new subCollection for chapters
+        CollectionReference chaptersCollection = courseDocRef.collection('chapters');
+        DocumentReference chapterDocRef = chaptersCollection.doc();
+
+        // Set chapter data
+        await chapterDocRef.set({
+          'title': chapter.title,
+        });
+
+        // Create a new subCollection for lectures within the chapter
+        CollectionReference lecturesCollection = chapterDocRef.collection('lectures');
+
+        for (var lecture in chapter.lectures) {
+          // Add lecture data to the suCollection
+          await lecturesCollection.add(lecture.toMap());
+        }
       }
+
+      // Clear the chapters list after saving
+      chapters.clear();
+
+      // Update the UI to reflect the changes
+      setState(() {});
+
+      // Display a success message
+      Fluttertoast.showToast(msg: "Chapters and lectures added successfully");
+    } catch (e) {
+      // Handle any errors
+      Fluttertoast.showToast(msg: "Error: $e");
     }
-
-    // Clear the chapters list after saving
-    chapters.clear();
-
-    // Update the UI to reflect the changes
-    setState(() {});
   }
+
 
   Future<bool> _onWillPop() async {
     return await showDialog(

@@ -8,6 +8,7 @@ import 'package:academyteacher/Authentication/NaivtaorPage.dart';
 import 'package:academyteacher/LIve/resources/jitsi_meet_wrapper_method.dart';
 import 'package:academyteacher/LIve/screens/meeting_screen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
+import 'package:academyteacher/course/addinglecture.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
 import 'package:academyteacher/live%20course/createLiveCourse.dart';
@@ -91,8 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
               return SingleChildScrollView(
                 child: Column(
                   children: [
-                    Padding(padding: EdgeInsets.only(top: 60)),
-                    Text('Welcome', style: TextStyle(fontSize: 20),),
+                    const Padding(padding: EdgeInsets.only(top: 60)),
+                    const Text('Welcome', style: TextStyle(fontSize: 20),),
                     // Text('$teacherName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
                     const SizedBox(height: 30),
                     DrawerButton(
@@ -110,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "Help & Support",
                       onPress: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => HelpAndSupportPage()));
+                            MaterialPageRoute(builder: (context) => const HelpAndSupportPage()));
                       },
                       icon: Icons.support_agent,
                     ),
@@ -141,17 +142,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       appBar: AppBar(
+
         actions: [
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.search),
+                icon: const Icon(Icons.search),
                 onPressed: () {
                   // Add search button onPressed logic here
                 },
               ),
               IconButton(
-                icon: Icon(Icons.report),
+                icon: const Icon(Icons.report),
                 onPressed: () {
                   // Add more options button onPressed logic here
                 },
@@ -159,184 +161,186 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           )
         ],
-        title: Text(""),
+        title: const Text("Academy"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: StreamBuilder(
-            stream: _databaseReference.child('courses').onValue,
+          child:  StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('courses').snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                final courseData =
-                    snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
 
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(
-                          courseData.length,
-                          (index) {
-                            final courseId = courseData.keys.toList()[index];
-                            final courseInfo =
-                                courseData[courseId] as Map<dynamic, dynamic>;
-                            return Container(
-                              width: 300,
-                              margin: const EdgeInsets.all(9),
-                              child: Card(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ViewChaptersPage(courseId: courseId)
-                                        ));
-                                    // Handle tap
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 200,
-                                        width: 300,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: courseInfo.containsKey('thumbnail')
-                                            ? Image.network(
-                                                courseInfo['thumbnail'],
-                                                width: 250,
-                                                height: 80,
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Container(),
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Text('No data available');
+              }
+
+              final courseData = snapshot.data!.docs;
+
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        courseData.length,
+                            (index) {
+                          final courseId = courseData[index].id;
+                          final courseInfo =
+                          courseData[index].data() as Map<String, dynamic>;
+                          return Container(
+                            width: 300,
+                            margin: const EdgeInsets.all(9),
+                            child: Card(
+                              margin: const EdgeInsets.only(bottom: 20),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                        // AddChapterPage(courseId: courseId)
+                                          ViewChaptersPage(courseId: courseId),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: 200,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
-                                      ListTile(
-                                        title: Text(
-                                          courseInfo['title'],
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                      child: courseInfo.containsKey('thumbnail')
+                                          ? Image.network(
+                                        courseInfo['thumbnail'],
+                                        width: 250,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                      )
+                                          : Container(),
+                                    ),
+                                    ListTile(
+                                      title: Text(
+                                        // courseId.toString()
+                                        courseInfo['title'],
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        subtitle: Text( "Price: ₹" +   courseInfo['price']),
                                       ),
-                                    ],
-                                  ),
+                                      subtitle: Text("Price: ₹" + courseInfo['price']),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SmallCard(title: 'Students', icon: Icons.groups_outlined, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterStudent()));
-                        }, iconColor: Colors.deepPurpleAccent,),
-                        SmallCard(title: 'Push Notification', icon: Icons.notification_add_outlined, onPress: () {  }, iconColor: Colors.redAccent,),
+                  ),
+                  // Rest of your UI and widgets
 
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SmallCard(title: 'Teachers', icon: Icons.card_membership, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>TeachersListScreen()));
-                        }, iconColor: Colors.black87,),
-                        SmallCard(title: 'Upload Book', icon: Icons.menu_book, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadPdfPage()));
-                        }, iconColor: Colors.orange,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SmallCard(title: 'Students', icon: Icons.groups_outlined, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterStudent()));
+                      }, iconColor: Colors.deepPurpleAccent,),
+                      SmallCard(title: 'Push Notification', icon: Icons.notification_add_outlined, onPress: () {  }, iconColor: Colors.redAccent,),
 
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SmallCard(title: 'Add Course', icon: Icons.video_collection_outlined, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateCourse()));
-                        }, iconColor: Colors.green,),
-                        SmallCard(title: 'Add SlideShow', icon: Icons.slideshow, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddingSlideShow()));
-                        }, iconColor: Colors.amber,),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SmallCard(title: 'Teachers', icon: Icons.card_membership, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const TeachersListScreen()));
+                      }, iconColor: Colors.black87,),
+                      SmallCard(title: 'Upload Book', icon: Icons.menu_book, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadPdfPage()));
+                      }, iconColor: Colors.orange,),
 
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SmallCard(title: 'Test Series', icon: Icons.access_alarm, onPress: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
-                        }, iconColor: Colors.deepPurpleAccent,),
-                        SmallCard(title: 'Sailed course', icon: Icons.shop, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SmallCard(title: 'Add Course', icon: Icons.video_collection_outlined, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const CreateCourse()));
+                      }, iconColor: Colors.green,),
+                      SmallCard(title: 'Add SlideShow', icon: Icons.slideshow, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddingSlideShow()));
+                      }, iconColor: Colors.amber,),
 
-                        }, iconColor: Colors.blue,),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SmallCard(title: 'Test Series', icon: Icons.access_alarm, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                      }, iconColor: Colors.deepPurpleAccent,),
+                      SmallCard(title: 'Live course', icon: Icons.shop, onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
 
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SmallCard(title: 'Announcement', icon: Icons.speaker, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
-                        }, iconColor: Colors.deepPurpleAccent,),
-                        SmallCard(title: 'Add Reel', icon: Icons.ondemand_video, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                      }, iconColor: Colors.blue,),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SmallCard(title: 'Announcement', icon: Icons.speaker, onPress: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                      }, iconColor: Colors.deepPurpleAccent,),
+                      SmallCard(title: 'Add Reel', icon: Icons.ondemand_video, onPress: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
 
-                        }, iconColor: Colors.blue,),
+                      }, iconColor: Colors.blue,),
 
-                      ],
-                    ),
-                    // Add your additional children here
-                     // Add some space between the cards
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const SizedBox(width: 30.0),
 
-                    Column(
-                      children: [
-                        SizedBox(width: 30.0),
+                      const Center(child: Text("Start Live Session", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),),),
 
-                        Center(child: Text("Start Live Session", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),),),
-
-                        Container(
-                        child: Padding(padding: EdgeInsets.all(20),
+                      Container(
+                        child: Padding(padding: const EdgeInsets.all(20),
                           child: ElevatedButton(onPressed: (){
                             createNewMeeting();
                           },
                             style: ElevatedButton.styleFrom(
                               primary: Colors.red, // Set the background color
-                              padding: EdgeInsets.all(16.0), // Adjust the padding for size
+                              padding: const EdgeInsets.all(16.0), // Adjust the padding for size
                             ), child: Container(
-                            child: Row(
-                              children: [
-                                Icon(Icons.video_call, color: Colors.white,),
-                                SizedBox(width: 20,),
-                                Text("Start Live Session", style: TextStyle(color: Colors.white,fontSize: 15),)
-                              ],
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.video_call, color: Colors.white,),
+                                  SizedBox(width: 20,),
+                                  Text("Start Live Session", style: TextStyle(color: Colors.white,fontSize: 15),)
+                                ],
+                              ),
                             ),
-                          ),
                           ),
                         ),)
 
-                      ],
-                    ),
-
-                    SizedBox(height: 10),
-                    // Text('You can add more information below.'),
-                  ],
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+                    ],
+                  ),
+                ],
+              );
             },
-          ),
+          )
         ),
       ),
       floatingActionButton: SpeedDial(
@@ -345,7 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPress: (){
       Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreen()));
         },
-        animatedIconTheme: IconThemeData(size: 22.0),
+        animatedIconTheme: const IconThemeData(size: 22.0),
         curve: Curves.easeInOut,
 
       ),
@@ -406,11 +410,11 @@ class SmallCard extends StatelessWidget {
         onTap: onPress,
         child: Card(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Icon(icon,color: iconColor,),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 Text(title),
               ],
             ),

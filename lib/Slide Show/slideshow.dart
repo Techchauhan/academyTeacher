@@ -143,6 +143,3 @@ class Slideshow {
   }
 }
 
-void main() {
-  runApp(MaterialApp(home: AddingSlideShow()));
-}

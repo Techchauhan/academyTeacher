@@ -83,83 +83,65 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                     ),
                   ],
                 ),
-                children: [
-                  // Display lectures for this chapter
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('courses')
-                        .doc(widget.courseId)
-                        .collection('chapters')
-                        .doc(chapterId)
-                        .collection('lectures')
-                        .snapshots(),
-                    builder: (context, lectureSnapshot) {
-                      if (lectureSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
+                children: chapterInfo['lectures'] != null
+                    ? (chapterInfo['lectures'] as List<dynamic>)
+                    .map((lectureInfo) {
+                  final lectureId = lectureInfo['id']; // You may need to adjust this based on your data structure
 
-                      if (lectureSnapshot.hasError) {
-                        return Text('Error: ${lectureSnapshot.error}');
-                      }
-
-                      if (!lectureSnapshot.hasData ||
-                          lectureSnapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text('No lectures available.'),
-                        );
-                      }
-
-                      final lecturesData = lectureSnapshot.data!.docs;
-
-                      return Column(
-                        children: lecturesData.map((lectureDoc) {
-                          final lectureInfo =
-                          lectureDoc.data() as Map<String, dynamic>;
-                          final lectureId = lectureDoc.id;
-
-                          return ListTile(
-                            title: Text(lectureInfo['title']),
-                            subtitle: Text(lectureInfo['videoUrl']),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    _editLecture(
-                                        chapterId, lectureId); // Call edit function
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    _deleteLecture(
-                                        chapterId, lectureId); // Call delete function
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ],
+                  return ListTile(
+                    title: Text(lectureInfo['title']),
+                    subtitle: Text(lectureInfo['videoUrl']),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            _editLecture(
+                                chapterId, lectureId); // Call edit function
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            _deleteLecture(
+                                chapterId, lectureId); // Call delete function
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList()
+                    : [],
               );
             }).toList(),
           );
         },
       ),
-      floatingActionButton: Expanded(
-        child: FloatingActionButton(
-          onPressed: (){
-            _addChapter();
-            Fluttertoast.showToast(msg: 'Adding New Chapter');
-          },
-          child: Icon(Icons.add)
-        ),
-      ),// Rest of your widget code...
+
+      floatingActionButton: SpeedDial(
+
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: const IconThemeData(size: 22.0),
+        curve: Curves.easeInOut,
+
+        children: [
+          SpeedDialChild(
+              child: const Icon(Icons.info), label: "Report issue", onTap: () {}),
+
+          SpeedDialChild(
+            child: const Icon(Icons.edit),
+            label: "ADD Lecture",
+            onTap: (){
+            },
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.edit),
+            label: "ADD Chapter",
+            onTap: _addChapter,
+          )
+        ],
+      ),
     );
   }
 
@@ -200,7 +182,6 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
       Fluttertoast.showToast(msg: "Error: $e");
     }
   }
-
 
 
   void _editChapter(String chapterId) {

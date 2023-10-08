@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:academyteacher/course/addinglecture.dart';
 import 'package:academyteacher/Authentication/myHomePage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -52,43 +53,75 @@ class _CreateCourseState extends State<CreateCourse> {
     final price = priceController.text;
     final startDate = startDateController.text;
     final courseFor = courseForController.text;
-    // final courseFor =
 
+    // Check if required fields are not empty
     if (name.isNotEmpty &&
         description.isNotEmpty &&
         price.isNotEmpty &&
         _selectedImage != null) {
-      final Reference storageReference =
-          _storage.ref().child('course_images/${DateTime.now()}.png');
-      final UploadTask uploadTask = storageReference.putFile(_selectedImage!);
-      final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+      try {
+        // Show the progress indicator
+        setState(() {
+          loading = true;
+        });
 
-      final imageUrl = await taskSnapshot.ref.getDownloadURL();
+        // Upload the image to Firebase Storage
+        final Reference storageReference =
+        _storage.ref().child('course_images/${DateTime.now()}.png');
+        final UploadTask uploadTask = storageReference.putFile(_selectedImage!);
+        final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
 
-      _databaseReference.child('courses').push().set({
-        'title': name,
-        'description': description,
-        'courseFor': courseFor,
-        'startDate': startDate,
-        'price': price,
-        'thumbnail': imageUrl,
-      });
+        // Retrieve the image URL
+        final imageUrl = await taskSnapshot.ref.getDownloadURL();
 
-      Fluttertoast.showToast(msg: "Add Lectures");
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AddChapterPage(courseId: user!.uid)));
-      courseNameController.clear();
-      courseDescriptionController.clear();
-      priceController.clear();
-      setState(() {
-        _selectedImage = null;
-      });
+        // Store course data in Firestore
+        await FirebaseFirestore.instance.collection('courses').add({
+          'title': name,
+          'description': description,
+          'courseFor': courseFor,
+          'startDate': startDate,
+          'price': price,
+          'thumbnail': imageUrl,
+        });
+
+        // Hide the progress indicator
+        setState(() {
+          loading = false;
+        });
+
+        // Display a success message
+        Fluttertoast.showToast(msg: "Course added successfully");
+
+        // Navigate to the next page (e.g., for adding lectures)
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddChapterPage(courseId: user!.uid)));
+
+        // Clear input fields and reset image selection
+        courseNameController.clear();
+        courseDescriptionController.clear();
+        priceController.clear();
+        setState(() {
+          _selectedImage = null;
+        });
+      } catch (e) {
+        // Hide the progress indicator
+        setState(() {
+          loading = false;
+        });
+
+        // Handle any errors (e.g., Firebase storage or Firestore errors)
+        Fluttertoast.showToast(msg: "Error: $e");
+      }
     } else {
-      const CircularProgressIndicator();
+      // Handle case where required fields are empty
+      Fluttertoast.showToast(msg: "Please fill in all required fields");
     }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -108,14 +141,14 @@ class _CreateCourseState extends State<CreateCourse> {
           child: Column(
             children: [
               _selectedImage != null
-                  ? Container(
+                  ? SizedBox(
                       height: 200,
                       width: 400,
                       child: Image.file(_selectedImage!),
                     )
                   : ElevatedButton(
                       onPressed: _pickImage,
-                      child: Container(
+                      child: SizedBox(
                           height: 200, width: 400, child: Icon(Icons.image, size: 50,)),
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey, // Background color
@@ -189,8 +222,19 @@ class _CreateCourseState extends State<CreateCourse> {
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                  onPressed: _uploadCourseData, child: Text("Upload")),
+              Stack(
+                children: [
+                  ElevatedButton(
+                    onPressed: loading ? null : _uploadCourseData, // Disable the button when loading
+                    child: Text("Upload"),
+                  ),
+                  if (loading)
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              )
+
             ],
           ),
         ),
