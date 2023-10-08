@@ -78,72 +78,66 @@ class _UploadPdfPageState extends State<UploadPdfPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: ()async{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)));
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Upload PDF'),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  _selectPdf(); // Call the _selectPdf function when the "Select" button is pressed
-                },
-                child: Text("Select PDF"),
-              ),
-              SizedBox(height: 20),
-              DropdownButton<String>(
-                value: _selectedCategory,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                },
-                items: <String>['Hindi', 'English', 'Maths', 'Science']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 20),
-              DropdownButton<String>(
-                value: _selectedClass,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedClass = value!;
-                  });
-                },
-                items: <String>[
-                  'Class 1',
-                  'Class 2',
-                  'Class 3',
-                  // Add more classes as needed
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Upload PDF'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                _selectPdf(); // Call the _selectPdf function when the "Select" button is pressed
+              },
+              child: Text("Select PDF"),
+            ),
+            SizedBox(height: 20),
+            DropdownButton<String>(
+              value: _selectedCategory,
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value!;
+                });
+              },
+              items: <String>['Hindi', 'English', 'Maths', 'Science']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            DropdownButton<String>(
+              value: _selectedClass,
+              onChanged: (value) {
+                setState(() {
+                  _selectedClass = value!;
+                });
+              },
+              items: <String>[
+                'Class 1',
+                'Class 2',
+                'Class 3',
+                // Add more classes as needed
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
 
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _isUploading ? null : _uploadPdf,
-                  child: _isUploading ? CircularProgressIndicator() : Text('Upload PDF'),
-                ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: _isUploading ? null : _uploadPdf,
+                child: _isUploading ? CircularProgressIndicator() : Text('Upload PDF'),
               ),
+            ),
 
-            ],
-          ),
+          ],
         ),
       ),
     );

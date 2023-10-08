@@ -1,5 +1,5 @@
 import 'package:academyteacher/LIve/resources/auth_methods.dart';
-import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
+import 'package:academyteacher/Authentication/NaivtaorPage.dart';
 import 'package:flutter/material.dart';
 import '../widgets/custom_button.dart';
 

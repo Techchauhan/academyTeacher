@@ -86,11 +86,6 @@ class _AddingSlideShowState extends State<AddingSlideShow> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)));
-          },
-        ),
         title: Text('Add Slide Show'),
       ),
       body: Column(

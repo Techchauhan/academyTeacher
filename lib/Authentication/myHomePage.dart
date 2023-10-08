@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:academyteacher/Basic%20Page/aboutUs.dart';
 import 'package:academyteacher/Basic%20Page/helpAndSuppportpage.dart';
 import 'package:academyteacher/Books/uploadPdf.dart';
 import 'package:academyteacher/Chat/chatScreen.dart';
-import 'package:academyteacher/LIve/screens/LiveHomePage.dart';
+import 'package:academyteacher/Authentication/NaivtaorPage.dart';
+import 'package:academyteacher/LIve/resources/jitsi_meet_wrapper_method.dart';
+import 'package:academyteacher/LIve/screens/meeting_screen.dart';
 import 'package:academyteacher/Slide%20Show/slideshow.dart';
 import 'package:academyteacher/course/createCourse.dart';
 import 'package:academyteacher/course/viewupdateChapter.dart';
@@ -17,13 +21,33 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key, required this.user,  });
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.user,  });
 
 
+  final String user;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final DatabaseReference _databaseReference =
   FirebaseDatabase.instance.reference();
-  final String user;
+
+  final JitsiMeetMethod _jitsiMeetMethods = JitsiMeetMethod();
+
+  createNewMeeting() async {
+    var random = Random();
+    String roomName = (random.nextInt(10000000) + 10000000).toString();
+    _jitsiMeetMethods.createMeeting(
+        roomName: roomName, isAudioMuted: true, isVideoMuted: true);
+  }
+
+  joinMeeting(BuildContext context) {
+    Navigator.pushNamed(context, '/video-call');
+  }
+
   //get
   Future<String?> getTeacherName(String userId) async {
     try {
@@ -41,7 +65,6 @@ class MyHomePage extends StatelessWidget {
     return null;
   }
 
-
   //For LogOut
   Future<void> _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -54,7 +77,7 @@ class MyHomePage extends StatelessWidget {
         child: FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
               .collection('teachers')
-              .doc(user) // Assuming 'user' is the user's document ID
+              .doc(widget.user) // Assuming 'user' is the user's document ID
               .get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,7 +98,7 @@ class MyHomePage extends StatelessWidget {
                     DrawerButton(
                       title: "Setting",
                       onPress: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const SettingPage()));
@@ -86,7 +109,7 @@ class MyHomePage extends StatelessWidget {
                     DrawerButton(
                       title: "Help & Support",
                       onPress: () {
-                        Navigator.pushReplacement(context,
+                        Navigator.push(context,
                             MaterialPageRoute(builder: (context) => HelpAndSupportPage()));
                       },
                       icon: Icons.support_agent,
@@ -96,7 +119,7 @@ class MyHomePage extends StatelessWidget {
                       title: "About us",
                       onPress: () {
 
-                        Navigator.pushReplacement(context,
+                        Navigator.push(context,
                             MaterialPageRoute(builder: (context) => AboutUsPage()));
                       },
                       icon: Icons.info,
@@ -215,7 +238,7 @@ class MyHomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SmallCard(title: 'Students', icon: Icons.groups_outlined, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>RegisterStudent()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterStudent()));
                         }, iconColor: Colors.deepPurpleAccent,),
                         SmallCard(title: 'Push Notification', icon: Icons.notification_add_outlined, onPress: () {  }, iconColor: Colors.redAccent,),
 
@@ -225,10 +248,10 @@ class MyHomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SmallCard(title: 'Teachers', icon: Icons.card_membership, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>TeachersListScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>TeachersListScreen()));
                         }, iconColor: Colors.black87,),
                         SmallCard(title: 'Upload Book', icon: Icons.menu_book, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>UploadPdfPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadPdfPage()));
                         }, iconColor: Colors.orange,),
 
                       ],
@@ -237,10 +260,10 @@ class MyHomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SmallCard(title: 'Add Course', icon: Icons.video_collection_outlined, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateCourse()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateCourse()));
                         }, iconColor: Colors.green,),
                         SmallCard(title: 'Add SlideShow', icon: Icons.slideshow, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AddingSlideShow()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddingSlideShow()));
                         }, iconColor: Colors.amber,),
 
                       ],
@@ -249,7 +272,7 @@ class MyHomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SmallCard(title: 'Test Series', icon: Icons.access_alarm, onPress: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
                         }, iconColor: Colors.deepPurpleAccent,),
                         SmallCard(title: 'Sailed course', icon: Icons.shop, onPress: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CreateLiveCourse( )));
@@ -283,7 +306,7 @@ class MyHomePage extends StatelessWidget {
                         Container(
                         child: Padding(padding: EdgeInsets.all(20),
                           child: ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LiveHomeScreen()));
+                            createNewMeeting();
                           },
                             style: ElevatedButton.styleFrom(
                               primary: Colors.red, // Set the background color
@@ -320,7 +343,7 @@ class MyHomePage extends StatelessWidget {
 
          icon: Icons.chat_outlined,
         onPress: (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ChatScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreen()));
         },
         animatedIconTheme: IconThemeData(size: 22.0),
         curve: Curves.easeInOut,

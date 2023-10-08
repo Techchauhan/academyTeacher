@@ -30,10 +30,10 @@ class JitsiMeetMethod {
       String? serverUrl =
       serverText.text.trim().isEmpty ? null : serverText.text;
 
-      Map<FeatureFlag, Object> featureFlags = {
-        // FeatureFlag.isWelcomePageEnabled,
-        // FeatureFlag.resolution,
-      } ;
+      // Set<FeatureFlag> featureFlags = {
+      //   FeatureFlag.isWelcomePageEnabled,
+      //   FeatureFlag.resolution,
+      // } ;
 
       String name;
       if (username.isEmpty) {

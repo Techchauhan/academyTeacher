@@ -34,152 +34,141 @@ class TeachersListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: ()async{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid))); // This pops the current page
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Our faculty members'),
-        leading: BackButton(
-            onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid))); // This pops the current page
-            },
-        ),
-        ),
-        body: FutureBuilder<List<Teacher>>(
-          future: fetchTeachers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator() ,
-              );// Loading indicator
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Text('No teachers found.');
-            } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    Teacher teacher = snapshot.data![index];
-                    return Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Left section: Teacher's image
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: NetworkImage(teacher.profilePhotoUrl),
-                                  fit: BoxFit.cover,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Our faculty members'),
+      ),
+      body: FutureBuilder<List<Teacher>>(
+        future: fetchTeachers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator() ,
+            );// Loading indicator
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Text('No teachers found.');
+          } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  Teacher teacher = snapshot.data![index];
+                  return Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Left section: Teacher's image
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: NetworkImage(teacher.profilePhotoUrl),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 16), // Add space between the sections
+                          // Right section: Teacher's information
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  teacher.name,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 16), // Add space between the sections
-                            // Right section: Teacher's information
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    teacher.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Teaching Subject: ',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Teaching Subject: ',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-
-                                        ),
+                                    Text(
+                                      ' ${teacher.teachingSubject} ',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
                                       ),
-                                      Text(
-                                        ' ${teacher.teachingSubject} ',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Qualification:',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                           fontWeight: FontWeight.w600
-                                        ),
-                                      ),
-                                      Text(
-                                        '  ${teacher.qualification} ',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Experience: ',
-                                        style: TextStyle(
-                                          fontSize: 14,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Qualification:',
+                                      style: TextStyle(
+                                        fontSize: 14,
                                          fontWeight: FontWeight.w600
-                                        ),
                                       ),
-                                      Text(
-                                        '${teacher.teachingExperience}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                        ),
+                                    ),
+                                    Text(
+                                      '  ${teacher.qualification} ',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(onPressed: (){
-                                        // Navigator.pushReplacement(context,
-                                        //     MaterialPageRoute(builder: (context)=>TeacherMessagingScreen(currentUser:  FirebaseAuth.instance.currentUser.uid.toString(), otherUser: '')));
-                                      },
-                                          icon:  Icon(Icons.chat_outlined))
+                                    ),
+                                  ],
+                                ),
 
-                                    ],
-                                  )
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Experience: ',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                       fontWeight: FontWeight.w600
+                                      ),
+                                    ),
+                                    Text(
+                                      '${teacher.teachingExperience}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(onPressed: (){
+                                      // Navigator.pushReplacement(context,
+                                      //     MaterialPageRoute(builder: (context)=>TeacherMessagingScreen(currentUser:  FirebaseAuth.instance.currentUser.uid.toString(), otherUser: '')));
+                                    },
+                                        icon:  Icon(Icons.chat_outlined))
 
-                                  // Add more information about the teacher here
-                                ],
-                              ),
+                                  ],
+                                )
+
+                                // Add more information about the teacher here
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                );
-            }
-          },
-        ),
+                    ),
+                  );
+                },
+              );
+          }
+        },
       ),
     );
   }

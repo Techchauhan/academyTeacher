@@ -94,15 +94,6 @@ class _CreateCourseState extends State<CreateCourse> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MyHomePage(
-                        user: FirebaseAuth.instance.currentUser!.uid)));
-          },
-        ),
         backgroundColor: Colors.transparent,
         title: const Center(
           child: Text(

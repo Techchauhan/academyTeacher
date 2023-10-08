@@ -54,6 +54,8 @@ dependencies:
   jitsi_meet_flutter_sdk: ^0.1.6
   jitsi_meet_wrapper: ^0.2.0+1
 
+  #to flip the Screen - Animation
+  flip_card: ^0.5.0
 
   #use to upload the video
   file_picker: ^4.2.0

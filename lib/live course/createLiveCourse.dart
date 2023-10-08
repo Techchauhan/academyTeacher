@@ -123,12 +123,6 @@ class _CreateLiveCourseState extends State<CreateLiveCourse> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: BackButton(
-            onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: FirebaseAuth.instance.currentUser!.uid)));
-
-            },
-          ) ,
           title: const Text('Create Live Course'),
         ),
         body: Padding(

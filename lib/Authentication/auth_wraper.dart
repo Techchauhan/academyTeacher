@@ -1,3 +1,4 @@
+import 'package:academyteacher/Authentication/NaivtaorPage.dart';
 import 'package:academyteacher/Authentication/loginPage.dart';
 import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +16,7 @@ class AuthWrapper extends StatelessWidget {
           if (user == null) {
             return LoginPage();
           } else {
-            return MyHomePage(user: user.uid);
+            return NavigatorPage();
           }
         }
         return const CircularProgressIndicator();

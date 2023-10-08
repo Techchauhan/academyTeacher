@@ -30,11 +30,6 @@ class _SettingPageState extends State<SettingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage(user: user!.uid)));
-          },
-        ),
         title: Text('Settings'),
       ),
       body: SingleChildScrollView(

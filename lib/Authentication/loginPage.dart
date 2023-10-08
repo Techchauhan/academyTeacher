@@ -1,6 +1,7 @@
 import 'package:academyteacher/Authentication/myHomePage.dart';
 import 'package:academyteacher/Authentication/singupPage.dart';
 import 'package:academyteacher/LIve/resources/auth_methods.dart';
+import 'package:academyteacher/Authentication/NaivtaorPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,8 +35,7 @@ class LoginPage extends StatelessWidget {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => MyHomePage(
-                user: FirebaseAuth.instance.currentUser!.uid,
+              builder: (context) => NavigatorPage(
               ),
             ),
           );
