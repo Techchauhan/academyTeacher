@@ -15,7 +15,6 @@ class ViewChaptersPage extends StatefulWidget {
 }
 
 class _ViewChaptersPageState extends State<ViewChaptersPage> {
-
   final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
 
   String oldLectureTitle = '';
@@ -54,10 +53,11 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
             children: chaptersData.map((chapterDoc) {
               final chapterInfo = chapterDoc.data() as Map<String, dynamic>;
               final chapterId = chapterDoc.id;
+              final chapterTitle = chapterInfo['title'];
 
               return ExpansionTile(
                 title: Text(
-                  chapterInfo['title'],
+                  chapterTitle,
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
                 trailing: Row(
@@ -66,25 +66,24 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                     IconButton(
                       icon: const Icon(Icons.add),
                       onPressed: () {
-                        _addLecture(chapterId); // Call add lecture function
+                        _addLecture(chapterId);
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
-                        _editChapter(chapterId); // Call edit function
+                        _editChapter(chapterId, chapterTitle);
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        _deleteChapter(chapterId); // Call delete chapter function
+                        _deleteChapter(chapterId);
                       },
                     ),
                   ],
                 ),
                 children: [
-                  // Display lectures for this chapter
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('courses')
@@ -128,14 +127,13 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
                                     _editLecture(
-                                        chapterId, lectureId); // Call edit function
+                                        chapterId, lectureId, lectureInfo['title'], lectureInfo['videoUrl']);
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
-                                    _deleteLecture(
-                                        chapterId, lectureId); // Call delete function
+                                    _deleteLecture(chapterId, lectureId);
                                   },
                                 ),
                               ],
@@ -151,36 +149,67 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
           );
         },
       ),
-      floatingActionButton: Expanded(
-        child: FloatingActionButton(
-          onPressed: (){
-            _addChapter();
-            Fluttertoast.showToast(msg: 'Adding New Chapter');
-          },
-          child: Icon(Icons.add)
-        ),
-      ),// Rest of your widget code...
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addChapter();
+          Fluttertoast.showToast(msg: 'Adding New Chapter');
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 
-
   void _addChapter() async {
-    try {
-      final DocumentReference courseRef = FirebaseFirestore.instance
-          .collection('courses')
-          .doc(widget.courseId);
+    String chapterTitle = ''; // Initialize an empty title
 
-      final newChapterRef = courseRef.collection('chapters').doc();
+    // Show a dialog to get the chapter title from the user
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add New Chapter'),
+          content: TextField(
+            decoration: InputDecoration(labelText: 'Chapter Title'),
+            onChanged: (value) {
+              chapterTitle = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, chapterTitle); // Close the dialog with the chapter title
+              },
+              child: Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
 
-      await newChapterRef.set({
-        'title': 'New Chapter', // Default title, you can allow the teacher to input this
-        'lectures': [],
-      });
-    } catch (e) {
-      // Handle errors, if any
-      Fluttertoast.showToast(msg: "Error: $e");
+    if (chapterTitle.isNotEmpty) {
+      try {
+        final DocumentReference courseRef = FirebaseFirestore.instance
+            .collection('courses')
+            .doc(widget.courseId);
+
+        final newChapterRef = courseRef.collection('chapters').doc(chapterTitle);
+
+        await newChapterRef.set({
+          'title': chapterTitle,
+          'lectures': [],
+        });
+      } catch (e) {
+        Fluttertoast.showToast(msg: "Error: $e");
+      }
     }
   }
+
   void _addLecture(String chapterId) async {
     try {
       final DocumentReference chapterRef = FirebaseFirestore.instance
@@ -192,66 +221,62 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
       final newLectureRef = chapterRef.collection('lectures').doc();
 
       await newLectureRef.set({
-        'title': 'New Lecture', // Default title, you can allow the teacher to input this
-        'videoUrl': 'https://www.youtube.com/', // Default URL, you can allow the teacher to input this
+        'title': 'New Lecture',
+        'videoUrl': 'https://www.youtube.com/',
       });
     } catch (e) {
-      // Handle errors, if any
       Fluttertoast.showToast(msg: "Error: $e");
     }
   }
 
-
-
-  void _editChapter(String chapterId) {
-    // Navigate to edit chapter page
+  void _editChapter(String chapterId, String chapterTitle) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditChapterPage(
           courseId: widget.courseId,
           chapterId: chapterId,
+          chapterTitle: chapterTitle,
         ),
       ),
     );
   }
 
-  void _editLecture(String chapterId, String lectureId) {
-    // Navigate to edit lecture page
+  void _editLecture(String chapterId, String lectureId, String lectureTitle, String videoUrl) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditLecturePage(
           courseId: widget.courseId,
           chapterId: chapterId,
-          lectureId: lectureId, oldVideoUrl: oldVideoUrl, oldLectureTitle: oldLectureTitle,
+          lectureId: lectureId,
+          oldLectureTitle: lectureTitle,
+          oldVideoUrl: videoUrl,
         ),
       ),
     );
   }
 
-  // For deleting lectures and chapters
-// For deleting chapters
   void _deleteChapter(String chapterId) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Chapter'),
-          content: const Text('Are you sure you want to delete this chapter?'),
+          title: Text('Delete Chapter'),
+          content: Text('Are you sure you want to delete this chapter?'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                _performDeleteChapter(chapterId); // Proceed with the deletion
-                Navigator.pop(context); // Close the dialog
+                _performDeleteChapter(chapterId);
+                Navigator.pop(context);
               },
-              child: const Text('Delete'),
+              child: Text('Delete'),
             ),
           ],
         );
@@ -259,30 +284,26 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
     );
   }
 
-
-
-
-// For deleting lectures
   void _deleteLecture(String chapterId, String lectureId) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Lecture'),
-          content: const Text('Are you sure you want to delete this lecture?'),
+          title: Text('Delete Lecture'),
+          content: Text('Are you sure you want to delete this lecture?'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                _performDeleteLecture(chapterId, lectureId); // Proceed with the deletion
-                Navigator.pop(context); // Close the dialog
+                _performDeleteLecture(chapterId, lectureId);
+                Navigator.pop(context);
               },
-              child: const Text('Delete'),
+              child: Text('Delete'),
             ),
           ],
         );
@@ -300,7 +321,6 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
 
       await chapterRef.delete();
     } catch (e) {
-      // Handle errors, if any
       Fluttertoast.showToast(msg: "Error: $e");
     }
   }
@@ -317,12 +337,7 @@ class _ViewChaptersPageState extends State<ViewChaptersPage> {
 
       await lectureRef.delete();
     } catch (e) {
-      // Handle errors, if any
       Fluttertoast.showToast(msg: "Error: $e");
     }
   }
-
 }
-
-
-

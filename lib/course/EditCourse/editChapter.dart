@@ -6,7 +6,7 @@ class EditChapterPage extends StatefulWidget {
   final String courseId;
   final String chapterId;
 
-  EditChapterPage({required this.courseId, required this.chapterId});
+  EditChapterPage({required this.courseId, required this.chapterId, required String chapterTitle});
 
   @override
   _EditChapterPageState createState() => _EditChapterPageState();
